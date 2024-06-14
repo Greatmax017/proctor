@@ -78,7 +78,7 @@ try:
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
     RATE = 44100
-    THRESHOLD = 200  # Adjust the threshold as needed
+    THRESHOLD = 50  # Adjust the threshold as needed
 
     p = pyaudio.PyAudio()
 
@@ -91,7 +91,6 @@ try:
     def detect_voice():
         try:
             data = stream.read(CHUNK, exception_on_overflow=False)
-            data_int = struct.unpack(str(2 * CHUNK) + 'B', data)
             audio_data = np.frombuffer(data, dtype=np.int16)
             
             # Calculate the root mean square (RMS) of the audio data
@@ -124,8 +123,10 @@ try:
             break
 
         spl = detect_voice()
-        if spl > 30:  # Adjust this threshold as needed
+        if spl > 50:  # Adjust this threshold as needed
             cv2.putText(frame, f"Voice audible to person beside (SPL: {spl:.2f} dB)", (50, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            infractions += 1
+            system_alert(f"Please keep quiet. {infractions}/4 committed")
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = detector(gray)
@@ -187,11 +188,11 @@ try:
             nose_end_point3D = np.array([(0.0, 0.0, 1000.0)])
             nose_end_point2D, _ = cv2.projectPoints(nose_end_point3D, rotation_vector, translation_vector, camera_matrix, dist_coeffs)
 
-                        # Convert image points from numpy array to integer tuples
+            # Convert image points from numpy array to integer tuples
             p1 = (int(image_points[0][0]), int(image_points[0][1]))
             p2 = (int(nose_end_point2D[0][0][0]), int(nose_end_point2D[0][0][1]))
 
-            # Draw the line from the nose tip to the projected point
+                        # Draw the line from the nose tip to the projected point
             cv2.line(frame, p1, p2, (255, 0, 0), 2)
 
             # Display the direction and gaze direction on the frame
@@ -199,8 +200,10 @@ try:
             cv2.putText(frame, gaze_direction, (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
 
             # Voice detection
-            if spl > 0:
+            if spl > 50:  # Adjust this threshold as needed
                 cv2.putText(frame, "Talking Detected", (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+                infractions += 1
+                system_alert(f"Please keep quiet. {infractions}/4 committed")
 
         # Display the resulting frame
         cv2.imshow("Frame", frame)
