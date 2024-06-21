@@ -1,2 +1,6 @@
 mediapipe>=0.8.9
 sounddevice>=0.4.4
+# opencv-python
+# dlib
+# numpy
+# pyaudio

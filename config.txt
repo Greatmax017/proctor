@@ -1,0 +1,13 @@
+
+    "face_predictor_path": "shape_predictor_68_face_landmarks.dat", //pre-trained facial landmarks predictor model using dlib
+    "audio_channels": 1, // 1 means mono and 2 for sterio
+    "audio_rate": 44100, //The sampling rate for audio capture in Hz
+    "audio_chunk": 2048, // The number of audio frames to process at a time. This will affects latency and processing load
+    "noise_threshold": 100, // Used in voice detection to filter out low-level background noise. Audio data below this amplitude is zeroed out.
+    "voice_threshold": 60, // The Sound Pressure Level (SPL) threshold above which voice is considered detected in decibels (dB), this can be adjusted base on environemnt and microphone sensitivity.
+    "head_angle_threshold": 20 // The angle in degrees beyond which head movement is considered an infraction. Adjust this to control sensitivity to head movements.
+
+
+pyinstaller --onefile --add-data "config.json:." --add-data "shape_predictor_68_face_landmarks.dat:." main.py
+
+
